@@ -8,6 +8,14 @@ import requests
 
 class Block:
     def __init__(self, index, transactions, timestamp, previous_hash, nonce=0):
+        '''
+        Constructor for the `Block` class.
+        :param index:         Unique ID of the block.
+        :param transactions:  List of transactions.
+        :param timestamp:     Time of generation of the block.
+        :param previous_hash: Hash of the previous block in the chain which this block is part of.                                        
+        '''
+
         self.index = index
         self.transactions = transactions
         self.timestamp = timestamp
@@ -15,9 +23,10 @@ class Block:
         self.nonce = nonce
 
     def compute_hash(self):
-        """
-        A function that return the hash of the block contents.
-        """
+        '''
+        Returns the hash of the block instance by first converting it
+        into JSON string.
+        '''
         block_string = json.dumps(self.__dict__, sort_keys=True)
         return sha256(block_string.encode()).hexdigest()
 
@@ -42,6 +51,10 @@ class Blockchain:
 
     @property
     def last_block(self):
+        '''
+        A quick pythonic way to retrieve the most recent block in the chain. Note that
+        the chain will always consist of at least one block (i.e., genesis block)
+        '''
         return self.chain[-1]
 
     def add_block(self, block, proof):
@@ -129,10 +142,8 @@ class Blockchain:
 
         proof = self.proof_of_work(new_block)
         self.add_block(new_block, proof)
-
         self.unconfirmed_transactions = []
-
-        return True
+        return new_block.index
 
 
 app = Flask(__name__)
@@ -324,4 +335,5 @@ def announce_new_block(block):
                       headers=headers)
 
 # Uncomment this line if you want to specify the port number in the code
-#app.run(debug=True, port=8000)
+#if __name__ == '__main__':
+#    app.run(debug=True, port=8000)
